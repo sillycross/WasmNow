@@ -1,0 +1,166 @@
+#!/usr/bin/python3 
+
+import os
+import sys
+import shutil
+import multiprocessing
+
+path = os.path.realpath(__file__)
+base_dir = os.path.dirname(path)
+
+def PrintUsageGeneralAndDie():
+    print('Usage: pochivm-build <update-docker-image|cmake|make> [args...]')
+    sys.exit(1)
+
+def PrintUsageCMakeAndDie():
+    print('Usage: pochivm-build cmake <debug|release|production> [clean]')
+    sys.exit(1)
+
+def PrintUsageMakeAndDie():
+    print('Usage: pochivm-build make <debug|release|production> [clean]')
+    sys.exit(1)
+
+def GetBuildDir():
+    return os.path.join(base_dir, 'build')
+
+def GetCCacheDir():
+    return os.path.join(GetBuildDir(), 'ccache')
+
+def GetBuildDirFlavor(flavor):
+    assert(flavor == 'debug' or flavor == 'release' or flavor == 'production')
+    return os.path.join(GetBuildDir(), flavor)
+
+def GetGeneratedDir():
+    return os.path.join(base_dir, '__generated__')
+
+def GetGeneratedDirFlavor(flavor):
+    assert(flavor == 'debug' or flavor == 'release' or flavor == 'production')
+    return os.path.join(GetGeneratedDir(), flavor)
+    
+def CreateDirIfNotExist(dirname):
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+
+if (len(sys.argv) < 2):
+    PrintUsageGeneralAndDie()
+
+op = sys.argv[1]
+
+if (op != 'update-docker-image' and op != 'cmake' and op != 'make'):
+    print('Unknown operation "%s".' % op)
+    PrintUsageGeneralAndDie()
+
+def BuildOrUpdateDockerImage():
+    docker_dir = os.path.join(base_dir, 'dockerfile')
+    if not os.path.exists(os.path.join(docker_dir, 'Dockerfile')):
+        print('[ERROR] Dockerfile not found!')
+        sys.exit(1)
+    cmd = 'docker build --tag pochivm-build:latest %s' % docker_dir
+    r = os.system(cmd)
+    if (r != 0):
+        print('[ERROR] Failed to build docker image, exit code = %d' % r)
+        sys.exit(r)
+    
+    CreateDirIfNotExist(os.path.join(base_dir, 'shared_libs'))
+    all_shared_libs = [
+        '/lib/x86_64-linux-gnu/libtinfo.so.5'
+    ]
+    for shared_lib in all_shared_libs:
+        cmd = 'docker run -v%s:/home/u/PochiVM pochivm-build:latest cp %s /home/u/PochiVM/shared_libs' % (base_dir, shared_lib)
+        r = os.system(cmd)
+        if (r != 0):
+            print('[ERROR] Failed to copy shared library %s, exit code = %d' % (shared_lib, r))
+            sys.exit(r)
+
+if (op == 'update-docker-image'):
+    BuildOrUpdateDockerImage();
+    sys.exit(0)
+
+r = os.system('docker inspect --type=image pochivm-build:latest >/dev/null 2>&1')
+if (r != 0):
+    print("Docker image 'pochivm-build:latest' does not exist.")
+    print('Building docker image, this may take a while...')
+    BuildOrUpdateDockerImage();
+    print('Docker image successfully built.')
+    
+if (op == 'cmake'):
+    if (len(sys.argv) < 3 or len(sys.argv) > 4):
+        PrintUsageCMakeAndDie()
+        
+    target = sys.argv[2]
+    if (target != 'debug' and target != 'release' and target != 'production'):
+        print('Unknown cmake target "%s".' % target)
+        PrintUsageCMakeAndDie()
+    
+    isClean = False
+    if (len(sys.argv) == 4):
+        if (sys.argv[3] != 'clean'):
+            PrintUsageCMakeAndDie()
+        isClean = True
+        
+    if (isClean):
+        dirname = GetBuildDirFlavor(target)
+        print('Removing directory: %s' % dirname)
+        shutil.rmtree(dirname)
+        sys.exit(0)
+    
+    CreateDirIfNotExist(GetBuildDir())
+    CreateDirIfNotExist(GetCCacheDir())
+    CreateDirIfNotExist(GetBuildDirFlavor(target))
+    CreateDirIfNotExist(GetGeneratedDir())
+    CreateDirIfNotExist(GetGeneratedDirFlavor(target))
+    CreateDirIfNotExist(os.path.join(GetGeneratedDirFlavor(target), 'generated'))
+    
+    cmd = "docker run -v %s:/home/u/PochiVM pochivm-build:latest bash -c 'cd PochiVM/build/%s && cmake ../../ -DBUILD_FLAVOR=%s -GNinja'" % (base_dir, target, target.upper())
+    r = os.system(cmd)
+    sys.exit(r)
+    
+if (op == 'make'):
+    if (len(sys.argv) < 3 or len(sys.argv) > 4):
+        PrintUsageMakeAndDie()
+        
+    target = sys.argv[2]
+    if (target != 'debug' and target != 'release' and target != 'production'):
+        print('Unknown make target "%s".' % target)
+        PrintUsageMakeAndDie()
+    
+    isClean = False
+    if (len(sys.argv) == 4):
+        if (sys.argv[3] != 'clean'):
+            PrintUsageMakeAndDie()
+        isClean = True
+    
+    if (not os.path.exists(GetBuildDirFlavor(target))):
+        print("[ERROR] Build directory 'build/%s' does not exist." % target)
+        print("Have you already run './pochivm-build cmake %s'?" % target)
+        sys.exit(1)
+       
+    if (isClean):
+        option = "clean"
+    else:
+        parallelism = 1
+        num_cpus = multiprocessing.cpu_count()
+        if (2 <= num_cpus and num_cpus <= 4):
+            parallelism = num_cpus - 1
+        else:
+            if (num_cpus > 4):
+                parallelism = num_cpus - 2
+        option = ("-j%s" % str(parallelism))
+    cmd = "docker run -v %s:/home/u/PochiVM pochivm-build:latest bash -c 'cd PochiVM/build/%s && ninja %s'" % (base_dir, target, option)
+    r = os.system(cmd)
+    if (r != 0):
+        sys.exit(r)
+        
+    if (not isClean):
+        # copy executable to project root
+        print('Copying built artifact to project root directory..')
+        src = os.path.join(GetBuildDirFlavor(target), "main")
+        dst = os.path.join(base_dir, "main")
+        shutil.copyfile(src, dst)
+        print('Build completed successfully.') 
+        
+    sys.exit(0)
+
+assert(False)
+
+
