@@ -7,3 +7,7 @@
 #include "fastinterp_tpl_operandshape.h"
 #include "fastinterp_tpl_object_size_kind.h"
 #include "fastinterp_tpl_stackframe_category.h"
+#include "wasm_binary_ops.h"
+#include "wasm_unary_ops.h"
+#include "wasm_relational_ops.h"
+#include "wasm_store_block_simple_result.h"

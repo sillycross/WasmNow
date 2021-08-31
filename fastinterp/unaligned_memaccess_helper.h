@@ -8,7 +8,7 @@ namespace PochiVM
 // Safe unaligned memory read/write.
 //
 template<typename T>
-T WARN_UNUSED UnalignedRead(uint8_t* src)
+T WARN_UNUSED UnalignedRead(const uint8_t* src)
 {
     T ret;
     memcpy(&ret, src, sizeof(T));

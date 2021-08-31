@@ -342,7 +342,7 @@ bool IsU64Placeholder(const std::string symbol, uint32_t& placeholderOrd /*out*/
 }
 
 template<typename T>
-T WARN_UNUSED UnalignedRead(uint8_t* src)
+T WARN_UNUSED UnalignedRead(const uint8_t* src)
 {
     T ret;
     memcpy(&ret, src, sizeof(T));

@@ -62,6 +62,12 @@ class FastInterpBoilerplateBluePrint : NonCopyable, NonMovable
 {
 public:
     friend class FastInterpBoilerplateInstance;
+    friend class WasmCommonOpcodeManager;
+    friend class WasmBranchManager;
+    friend class WasmCppEntryManager;
+    friend class WasmCallManager;
+    friend class WasmBrTableManager;
+    friend class WasmCallIndirectManager;
 
     size_t GetCodeSectionLength() const
     {

@@ -596,6 +596,13 @@ public:
         return m_typeId;
     }
 
+    template<typename T>
+    static FastInterpTypeId WARN_UNUSED Get()
+    {
+        static_assert(!std::is_pointer<T>::value);
+        return TypeId::Get<T>().GetDefaultFastInterpTypeId();
+    }
+
 private:
     TypeId m_typeId;
 };

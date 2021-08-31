@@ -14,56 +14,41 @@
 # 
 string(REPLACE " -O0 " " " CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 string(REPLACE " -g " " " CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fconstexpr-steps=100000000 -fconstexpr-depth=131072 -ftemplate-depth=131072 ")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fconstexpr-steps=100000000 -fconstexpr-depth=131072 -ftemplate-depth=131072 -mavx2 -fno-math-errno ")
 
 SET(FASTINTERP_TPL_SOURCES
+  wasm_int_binary_ops.cpp
+  wasm_float_binary_ops.cpp
+  wasm_int_unary_ops.cpp
+  wasm_float_unary_ops.cpp
+  wasm_relational_ops.cpp
+  wasm_test_ops.cpp
+  wasm_memory_load_ops.cpp
+  wasm_memory_store_ops_1.cpp
+  wasm_memory_store_ops_2.cpp
+  wasm_conversion_ops.cpp
+  wasm_bitcast_ops.cpp
+  wasm_extend_ops.cpp
+  wasm_global_set.cpp
+  wasm_global_get.cpp
+  wasm_local_store_tee.cpp
+  wasm_local_get.cpp
+  wasm_select_float_ops.cpp
+  wasm_select_int_ops.cpp
+  wasm_noop.cpp
+  wasm_store_block_simple_result.cpp
+  wasm_branch.cpp
+  wasm_constant32.cpp
+  wasm_constant64.cpp
+  wasm_return.cpp
+  wasm_return_none.cpp
   fastinterp_tpl_cdecl_interface.cpp
-  fastinterp_tpl_partial_inline_lhs_assign.cpp
-  fastinterp_tpl_inline_arith_expr.cpp
-  fastinterp_tpl_outlined_arith_expr.cpp
-  fastinterp_tpl_outlined_return.cpp
-  fastinterp_tpl_inline_return.cpp
-  fastinterp_tpl_partial_inline_arith_expr.cpp
-  fastinterp_tpl_inline_assign.cpp
-  fastinterp_tpl_inline_assign_arith_expr.cpp
-  fastinterp_tpl_outlined_assign.cpp
-  fastinterp_tpl_inline_comparison_expr.cpp
-  fastinterp_tpl_inline_comparison_conditional_branch.cpp
-  fastinterp_tpl_partial_inline_comparison_conditional_branch.cpp
-  fastinterp_tpl_astvariable.cpp
-  fastinterp_tpl_astderefvariable.cpp
-  fastinterp_tpl_partial_inline_pointer_arith.cpp
-  fastinterp_tpl_partial_inline_rhs_assign.cpp
-  fastinterp_tpl_call_expr.cpp
-  fastinterp_tpl_call_expr_check_exception.cpp
-  fastinterp_tpl_call_expr_store_param.cpp
-  fastinterp_tpl_call_expr_spill_stackaddr.cpp
-  fastinterp_tpl_partial_inline_comparison_expr.cpp
-  fastinterp_tpl_outlined_comparison_expr.cpp
-  fastinterp_tpl_abort_trap.cpp
-  fastinterp_tpl_inline_dereference.cpp
-  fastinterp_tpl_partial_inline_rhs_deref.cpp
-  fastinterp_tpl_partial_inline_lhs_deref.cpp
-  fastinterp_tpl_outlined_deref.cpp
-  fastinterp_tpl_astliteral_mcmedium.cpp
-  fastinterp_tpl_astliteral_mcsmall.cpp
-  fastinterp_tpl_noop.cpp
-  fastinterp_tpl_outlined_conditional_branch.cpp
-  fastinterp_tpl_inline_comparison_condbr_unpredictable.cpp
-  fastinterp_tpl_partial_inline_comparison_condbr_unpredictable.cpp
-  fastinterp_tpl_outlined_condbr_unpredictable.cpp
-  fastinterp_tpl_logical_and_or.cpp
-  fastinterp_tpl_logical_not.cpp
-  fastinterp_tpl_pointer_cast.cpp
-  fastinterp_tpl_static_cast.cpp
-  fastinterp_tpl_call_expr_enter_cpp_fn.cpp
-  fastinterp_tpl_return_spilled_location.cpp
-  fastinterp_tpl_call_expr_call_dtor.cpp
-  fastinterp_tpl_call_expr_cpp_const_primitive_ref.cpp
-  fastinterp_tpl_throw_exception.cpp
-  fastinterp_tpl_call_expr_call_dtor_caller.cpp
-  fastinterp_tpl_static_cast_u64_double.cpp
-  fastinterp_tpl_outlined_pointer_arithmetic.cpp
+  wasm_call.cpp
+  wasm_call_store_int_param.cpp
+  wasm_call_store_float_param.cpp
+  wasm_call_switch_sf.cpp
+  wasm_br_table.cpp
+  wasm_call_indirect.cpp
 )
 
 SET(FASTINTERP_SOURCES

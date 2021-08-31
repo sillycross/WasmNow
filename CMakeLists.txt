@@ -46,7 +46,7 @@ endif()
 
 # add -pthread
 # 
-SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -pthread ")
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -pthread -mavx2 ")
 
 # -rdynamic so symbols are exposed to generated code
 # 
@@ -129,7 +129,9 @@ add_subdirectory(pochivm)
 # add the executable
 #
 add_executable(main
-  main.cpp                 
+  main.cpp           
+  test_parser.cpp
+  wasi_impl.cpp
 )
 
 target_link_libraries(main PUBLIC
