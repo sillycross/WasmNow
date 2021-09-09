@@ -55,6 +55,8 @@ The `taskset` above binds the executable to a fixed CPU ID, which reduces noise 
 
 ## License
 
-MIT License.
+The ultimate goal of this project is to make the world a better place. While a restrictive license may reduce certain misuses that contradict our values, we believe software license is not the best solution to such problems. 
+
+Therefore, this project uses MIT license, a very permissive license. However, we humbly request you to consider refrain from using the software for projects that cause harm to the world. For more information and examples, see our [open-source software for a better world statement](oss-for-a-better-world.md).
 
 
