@@ -15,9 +15,9 @@ This is a prototype of a baseline compiler for WebAssembly. Unlike an optimizing
 
 Our compiler employs a novel technique called copy-and-patch, which allows it to both compile significantly faster, and generate significantly better code compared with industrial state-of-the-art baseline compilers, including Chrome's Liftoff compiler and Wasmer's Singlepass compiler. 
 
-Compared with Google Chrome's Liftoff compiler, on [Coremark benchmark](https://github.com/eembc/coremark), we compile 5x faster while also generating 46% faster code; on [PolyBenchC benchmark](https://github.com/MatthiasJReisinger/PolyBenchC-4.2.1/), we compile 6.5x faster while also generating 63% faster code.
+Compared with Google Chrome's Liftoff compiler, on [Coremark benchmark](https://github.com/eembc/coremark), we compile 5x faster while also generating 39% faster code; on [PolyBenchC benchmark](https://github.com/MatthiasJReisinger/PolyBenchC-4.2.1/), we compile 6.5x faster while also generating 63% faster code.
 
-More details of the copy-and-patch technique, the benchmarks, and another application of the technique on SQL query compilers can be found in paper [*Copy-and-Patch Compilation: A fast compilation algorithm for high-level languages and bytecode*](https://github.com/sillycross/WasmNow/blob/main/paper.pdf), to be published on OOPSLA 2021.
+More details of the copy-and-patch technique, the benchmarks, and another application of the technique on SQL query compilers can be found in paper [*Copy-and-Patch Compilation: A fast compilation algorithm for high-level languages and bytecode*](http://fredrikbk.com/publications/copy-and-patch.pdf), published on OOPSLA 2021 and received a Distinguished Paper Award.
 
 ## What is Implemented
 
