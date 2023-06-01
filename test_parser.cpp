@@ -801,6 +801,7 @@ struct WasmExportSection
     WasmExportSection()
         : m_numFunctionsExported(0)
         , m_numGlobalsExported(0)
+        , m_startFuncIndex(0)
         , m_exportedFunctions(nullptr)
         , m_exportedGlobals(nullptr)
         , m_exportedTable(nullptr)
@@ -824,6 +825,7 @@ struct WasmExportSection
                 // function export
                 //
                 m_exportedFunctions[m_numFunctionsExported] = entity;
+		if (strcmp(entity.m_name, "_start") == 0) m_startFuncIndex = m_numFunctionsExported;
                 m_numFunctionsExported++;
             }
             else if (exportType == 3)
@@ -861,6 +863,7 @@ struct WasmExportSection
 
     uint32_t m_numFunctionsExported;
     uint32_t m_numGlobalsExported;
+    uint32_t m_startFuncIndex;
     WasmExportedEntity* m_exportedFunctions;
     uint8_t** m_exportedFunctionAddresses;
     WasmExportedEntity* m_exportedGlobals;
@@ -5834,10 +5837,11 @@ void RunWasiModule(const std::string& s)
     AutoThreadErrorContext atec;
 
     WasmModule mod;
-    ReleaseAssert(mod.ParseModule(s.c_str()));
+    double compileTime = 0;
+    ReleaseAssert(mod.ParseModule(s.c_str(), &compileTime));
+    printf("compile us: %.0lf\n", compileTime * 1000000.0);
 
-    ReleaseAssert(mod.m_exportSection.m_numFunctionsExported == 1);
-    uint32_t funcIdx = mod.m_exportSection.m_exportedFunctions[0].m_entityIdx;
+    uint32_t funcIdx = mod.m_exportSection.m_exportedFunctions[mod.m_exportSection.m_startFuncIndex].m_entityIdx;
     uint32_t funcTypeIdx = mod.m_functionDeclarations.m_functionDeclarations[funcIdx];
     WasmFunctionType funcType = mod.m_functionTypeIndices.GetFunctionTypeFromIdx(funcTypeIdx);
     ReleaseAssert(funcType.m_numParams == 0 && funcType.m_numReturns == 0);
@@ -5942,37 +5946,11 @@ TEST(WasmExecution, PolyBenchC_ ## name)                                \
     RunWasiModule(s);                                                   \
 }
 
-GENERATE_POLYBENCHC_TEST(2mm)
-GENERATE_POLYBENCHC_TEST(3mm)
-GENERATE_POLYBENCHC_TEST(adi)
-GENERATE_POLYBENCHC_TEST(atax)
-GENERATE_POLYBENCHC_TEST(bicg)
-GENERATE_POLYBENCHC_TEST(cholesky)
-GENERATE_POLYBENCHC_TEST(correlation)
-GENERATE_POLYBENCHC_TEST(covariance)
-GENERATE_POLYBENCHC_TEST(deriche)
-GENERATE_POLYBENCHC_TEST(doitgen)
-GENERATE_POLYBENCHC_TEST(durbin)
-GENERATE_POLYBENCHC_TEST(fdtd_2d)
-GENERATE_POLYBENCHC_TEST(floyd_warshall)
-GENERATE_POLYBENCHC_TEST(gemm)
-GENERATE_POLYBENCHC_TEST(gemver)
-GENERATE_POLYBENCHC_TEST(gesummv)
-GENERATE_POLYBENCHC_TEST(gramschmidt)
-GENERATE_POLYBENCHC_TEST(heat_3d)
-GENERATE_POLYBENCHC_TEST(jacobi_1d)
-GENERATE_POLYBENCHC_TEST(jacobi_2d)
-GENERATE_POLYBENCHC_TEST(ludcmp)
-GENERATE_POLYBENCHC_TEST(lu)
-GENERATE_POLYBENCHC_TEST(mvt)
-GENERATE_POLYBENCHC_TEST(nussinov)
-GENERATE_POLYBENCHC_TEST(seidel_2d)
-GENERATE_POLYBENCHC_TEST(symm)
-GENERATE_POLYBENCHC_TEST(syr2k)
-GENERATE_POLYBENCHC_TEST(syrk)
-GENERATE_POLYBENCHC_TEST(trisolv)
-GENERATE_POLYBENCHC_TEST(trmm)
 
 #undef GENERATE_POLYBENCHC_TEST
 #undef TOSTRING
 #undef STRINGIFY
+
+void test_main(char* filename) {
+  RunWasiModule(filename);
+}

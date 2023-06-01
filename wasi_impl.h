@@ -16,6 +16,8 @@ struct SimpleWasiImpl
     static uint32_t fd_close(uintptr_t);
     static uint32_t fd_seek(uintptr_t);
     static uint32_t fd_write(uintptr_t);
+    static uint32_t poll_oneoff(uintptr_t);
+    static uint32_t random_get(uintptr_t);
 };
 
 extern std::map< std::pair<std::string, std::string>, uintptr_t> g_wasiLinkMapping;

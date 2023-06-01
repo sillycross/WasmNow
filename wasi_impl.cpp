@@ -359,18 +359,31 @@ uint32_t SimpleWasiImpl::fd_write(uintptr_t params)
     return __WASI_ERRNO_SUCCESS;
 }
 
+uint32_t SimpleWasiImpl::poll_oneoff(uintptr_t params)
+{
+  return params == 0 ? 0 : 0;
+}
+
+uint32_t SimpleWasiImpl::random_get(uintptr_t params)
+{
+  return params == 0 ? 0 : 0;
+}
+
+
 std::map< std::pair<std::string, std::string>, uintptr_t> g_wasiLinkMapping =
 {
-    { { "wasi_unstable", "fd_prestat_get"},      reinterpret_cast<uintptr_t>(&SimpleWasiImpl::fd_prestat_get) },
-    { { "wasi_unstable", "fd_prestat_dir_name"}, reinterpret_cast<uintptr_t>(&SimpleWasiImpl::fd_prestat_dir_name) },
-    { { "wasi_unstable", "environ_sizes_get"},   reinterpret_cast<uintptr_t>(&SimpleWasiImpl::environ_sizes_get) },
-    { { "wasi_unstable", "environ_get"},         reinterpret_cast<uintptr_t>(&SimpleWasiImpl::environ_get) },
-    { { "wasi_unstable", "args_sizes_get"},      reinterpret_cast<uintptr_t>(&SimpleWasiImpl::args_sizes_get) },
-    { { "wasi_unstable", "args_get"},            reinterpret_cast<uintptr_t>(&SimpleWasiImpl::args_get) },
-    { { "wasi_unstable", "clock_time_get"},      reinterpret_cast<uintptr_t>(&SimpleWasiImpl::clock_time_get) },
-    { { "wasi_unstable", "proc_exit"},           reinterpret_cast<uintptr_t>(&SimpleWasiImpl::proc_exit) },
-    { { "wasi_unstable", "fd_fdstat_get"},       reinterpret_cast<uintptr_t>(&SimpleWasiImpl::fd_fdstat_get) },
-    { { "wasi_unstable", "fd_close"},            reinterpret_cast<uintptr_t>(&SimpleWasiImpl::fd_close) },
-    { { "wasi_unstable", "fd_seek"},             reinterpret_cast<uintptr_t>(&SimpleWasiImpl::fd_seek) },
-    { { "wasi_unstable", "fd_write"},            reinterpret_cast<uintptr_t>(&SimpleWasiImpl::fd_write) }
+    { { "wasi_snapshot_preview1", "fd_prestat_get"},      reinterpret_cast<uintptr_t>(&SimpleWasiImpl::fd_prestat_get) },
+    { { "wasi_snapshot_preview1", "fd_prestat_dir_name"}, reinterpret_cast<uintptr_t>(&SimpleWasiImpl::fd_prestat_dir_name) },
+    { { "wasi_snapshot_preview1", "environ_sizes_get"},   reinterpret_cast<uintptr_t>(&SimpleWasiImpl::environ_sizes_get) },
+    { { "wasi_snapshot_preview1", "environ_get"},         reinterpret_cast<uintptr_t>(&SimpleWasiImpl::environ_get) },
+    { { "wasi_snapshot_preview1", "args_sizes_get"},      reinterpret_cast<uintptr_t>(&SimpleWasiImpl::args_sizes_get) },
+    { { "wasi_snapshot_preview1", "args_get"},            reinterpret_cast<uintptr_t>(&SimpleWasiImpl::args_get) },
+    { { "wasi_snapshot_preview1", "clock_time_get"},      reinterpret_cast<uintptr_t>(&SimpleWasiImpl::clock_time_get) },
+    { { "wasi_snapshot_preview1", "proc_exit"},           reinterpret_cast<uintptr_t>(&SimpleWasiImpl::proc_exit) },
+    { { "wasi_snapshot_preview1", "fd_fdstat_get"},       reinterpret_cast<uintptr_t>(&SimpleWasiImpl::fd_fdstat_get) },
+    { { "wasi_snapshot_preview1", "fd_close"},            reinterpret_cast<uintptr_t>(&SimpleWasiImpl::fd_close) },
+    { { "wasi_snapshot_preview1", "fd_seek"},             reinterpret_cast<uintptr_t>(&SimpleWasiImpl::fd_seek) },
+    { { "wasi_snapshot_preview1", "poll_oneoff"},         reinterpret_cast<uintptr_t>(&SimpleWasiImpl::poll_oneoff) },
+    { { "wasi_snapshot_preview1", "random_get"},          reinterpret_cast<uintptr_t>(&SimpleWasiImpl::random_get) },
+    { { "wasi_snapshot_preview1", "fd_write"},            reinterpret_cast<uintptr_t>(&SimpleWasiImpl::fd_write) }
 };
